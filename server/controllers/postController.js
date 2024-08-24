@@ -4,7 +4,7 @@ import GeneratedImage from '../model/Posts.js'; // Import the GeneratedImage mod
 export const createPost = async (req, res) => {
   try {
     // Validate request body
-    const { url, prompt, user, settings } = req.body;
+    const { url, prompt, user, settings ,username} = req.body;
     console.log(req.body)
     if (!url || !prompt || !user || !settings || !settings.model) {
       return res.status(400).json({ error: 'URL, prompt, user, and settings (including model) are required' });
@@ -16,6 +16,7 @@ export const createPost = async (req, res) => {
       prompt,
       user,
       settings,
+      username
     });
 
     // Save post to database

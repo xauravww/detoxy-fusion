@@ -29,16 +29,16 @@ wss.on('connection', function connection(ws) {
       userId = parsedData.userId;
       onlineUsers[userId] = ws; // Track this user as online
       broadcastOnlineUsers();
-    } else if (parsedData.type === 'message') {
-      const { senderId, id, contactId, text ,imageUrl,settings ,prompt } = parsedData;
+    } else if (parsedData.type === 'message' || parsedData.type === 'image') {
+      const { senderId, id, contactId, text ,imageUrl,settings ,prompt , username } = parsedData;
 
       // Construct the message payload
       const message = JSON.stringify({ type: 'message', senderId, text });
 
-      if (contactId && onlineUsers[contactId]) {
+      if (contactId && onlineUsers[contactId] && contactId!=senderId) {
         // Send message to specific recipient
-        console.log("getting imageurl in backend before unicasting "+JSON.stringify(senderId, id, contactId, text ,imageUrl,settings ,prompt))
-        onlineUsers[contactId].send(JSON.stringify({type: 'message',senderId, id, contactId, text ,imageUrl,settings ,prompt}));
+        console.log("getting imageurl in backend before unicasting "+JSON.stringify(senderId, id, contactId, text ,imageUrl,settings ,prompt,username))
+        onlineUsers[contactId].send(JSON.stringify({type: 'message',senderId, id, contactId, text ,imageUrl,settings ,prompt,username}));
       } else {
         // Broadcast the message to all clients except the sender
         for (const [clientId, client] of Object.entries(onlineUsers)) {
@@ -99,8 +99,8 @@ app.use(cors());
 app.use('/api/posts', postRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
-app.use('/generateImage', generateRoutes);
-app.use('/message', messageRoutes);
+app.use('/api/generateImage', generateRoutes);
+app.use('/api/message', messageRoutes);
 
 app.get('/', (req, res) => {
   res.send('Welcome to the AI Image Generator API!');

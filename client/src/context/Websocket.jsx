@@ -8,6 +8,7 @@ export const WebSocketProvider = ({ children }) => {
   const [isConnected, setIsConnected] = useState(false);
   const [onlineUsers, setOnlineUsers] = useState({}); 
   const [messages, setMessages] = useState([]);
+  const [input, setInput] = useState("");
   const socketRef = useRef(null);
 
   useEffect(() => {
@@ -55,12 +56,13 @@ export const WebSocketProvider = ({ children }) => {
             ...prevMessages,
             {
               senderId: messageData.senderId,
-              text: messageData.text,
+              text: messageData.text || messageData.prompt,
               id: messageData.id,
               contactId: messageData.contactId,
               imageUrl: messageData.imageUrl,
               settings:messageData.settings,
-              prompt:messageData.prompt
+              prompt:messageData.prompt,
+              username:messageData.username
             }
           ]);
         }
@@ -86,7 +88,7 @@ export const WebSocketProvider = ({ children }) => {
   }, [isConnected]);
 
   return (
-    <webSocketContext.Provider value={{ sendMessage, isConnected, onlineUsers, messages,setMessages }}>
+    <webSocketContext.Provider value={{ sendMessage, isConnected, onlineUsers, messages,setMessages,input, setInput }}>
       {children}
     </webSocketContext.Provider>
   );

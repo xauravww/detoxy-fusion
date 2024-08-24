@@ -1,29 +1,31 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import fallbackPic from '../../public/assets/anonymous.svg'; // Fallback profile picture
+import { useNavigate, useParams } from 'react-router-dom';
+import fallbackPic from '../../public/assets/anonymous.svg'; 
 
 const Profile = () => {
   const navigate = useNavigate();
   const [profile, setProfile] = useState({
     name: '',
     email: '',
-    profilePicture: '',
+    profilePicture: fallbackPic,
     friends: [],
   });
-  const [loading, setLoading] = useState(true); 
-
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null); 
+  const {username} = useParams()
   useEffect(() => {
     const fetchProfileData = async () => {
-      setLoading(true); 
+      setLoading(true);
+      setError(null); // Reset error state on new fetch
       try {
         console.log('Fetching profile data...');
         
-        const userId = JSON.parse(localStorage.getItem('user')).id; 
-        if (!userId) {
-          throw new Error('No user ID found in local storage');
+    
+        if (!username) {
+          throw new Error('No username found in params');
         }
 
-        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/users/${userId}`);
+        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/users/profile/${username}`);
         if (!response.ok) {
           throw new Error('Failed to fetch profile data');
         }
@@ -36,14 +38,15 @@ const Profile = () => {
           friends: data.friendList || [],
         });
       } catch (error) {
+        setError(error.message); 
         console.error('Failed to fetch profile data:', error);
       } finally {
-        setLoading(false); 
+        setLoading(false);
       }
     };
 
     fetchProfileData();
-  }, []);
+  }, [username]);
 
   const handleDeleteAccount = () => {
     console.log('Account deleted');
@@ -53,10 +56,16 @@ const Profile = () => {
 
   const handleFriendRequest = (friendName) => {
     console.log(`Friend request sent to ${friendName}`);
+    // Add functionality for friend request here
+    //i will add it in future versions
   };
 
   if (loading) {
     return <div className="flex justify-center items-center h-screen text-white">Loading...</div>;
+  }
+
+  if (error) {
+    return <div className="flex justify-center items-center h-screen text-white">Error: {error}</div>;
   }
 
   return (

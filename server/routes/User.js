@@ -5,6 +5,7 @@ import {
   getAllUsers,
   updateUser,
   deleteUser,
+  getUserByUsername
 } from '../controllers/userController.js';
 
 const router = express.Router();
@@ -14,6 +15,7 @@ router.post('/', createUser);
 
 // Route to get a user by ID
 router.get('/:id', getUserById);
+router.get('/profile/:username', getUserByUsername);
 
 // Route to get all users
 router.get('/', getAllUsers);

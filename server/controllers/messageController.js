@@ -3,7 +3,7 @@ import Message from '../model/Message.js';
 // Function to handle sending a new message
 export const sendMessage = async (req, res) => {
   try {
-    const { text, senderId, id, contactId, type ,imageUrl } = req.body;
+    const { text, senderId, id, contactId, type ,imageUrl ,username } = req.body;
 
     // Create a new message
     console.log("getting type "+type);
@@ -13,7 +13,8 @@ export const sendMessage = async (req, res) => {
       senderId,
       id,
       contactId,
-      imageUrl
+      imageUrl,
+      username,
     });
 
     // Save the message to the database

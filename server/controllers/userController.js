@@ -84,3 +84,19 @@ export const deleteUser = async (req, res) => {
     res.status(400).json({ error: error.message });
   }
 };
+
+// Get a user by username
+export const getUserByUsername = async (req, res) => {
+  try {
+    const { username } = req.params;
+    // Find user by username
+    const user = await User.findOne({ username });
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    res.json(user);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
+

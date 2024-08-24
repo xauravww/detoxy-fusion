@@ -1,6 +1,7 @@
-import  { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { sidebarContext } from "../context/Sidebar";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const contacts = [
   {
@@ -34,8 +35,9 @@ const contacts = [
 ];
 
 const ContactSelector = ({ onSelect, onClose, imageDetails }) => {
-  const { selectedChat, setSelectedChat } = useContext(sidebarContext);
+  const { selectedChat } = useContext(sidebarContext);
   const [searchQuery, setSearchQuery] = useState("");
+  const navigate = useNavigate();
 
   useEffect(() => {
     console.log('imageDetails', imageDetails);
@@ -47,17 +49,20 @@ const ContactSelector = ({ onSelect, onClose, imageDetails }) => {
 
   const handlePostToFeed = async () => {
     if (imageDetails) {
+      console.log("imagdetails feed k liye ye aayi h bs "+JSON.stringify(imageDetails));
       const payload = {
-        url: imageDetails.imageUrl, // Use the actual image URL from imageDetails
-        prompt: imageDetails.prompt || "", // Use the prompt from imageDetails
-        user: imageDetails.user?._id || JSON.parse(localStorage.getItem("user")).id, // Use the user id from imageDetails
-        settings: imageDetails.settings, // Use the settings from imageDetails
+        url: imageDetails.imageUrl, 
+        prompt: imageDetails.prompt || "", 
+        user: imageDetails.user?._id || JSON.parse(localStorage.getItem("user")).id,
+        settings: imageDetails.settings, 
+        username: imageDetails.username
       };
 
       try {
         const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/posts`, payload);
         if (response.status === 201) {
           alert('Chat posted to feed!');
+          navigate('/feed', { state: { scrollToBottom: true } }); // Navigate to feed and set scrollToBottom
         } else {
           alert('Failed to post chat to feed.');
         }
@@ -120,7 +125,6 @@ const ContactSelector = ({ onSelect, onClose, imageDetails }) => {
             Cancel
           </button>
         </div>
-        {/* <p className="mt-2 text-gray-400 text-sm">Send to friends available soon</p> */}
       </div>
     </div>
   );

@@ -8,9 +8,13 @@ const Sidebar = () => {
   const { onlineUsers } = useContext(webSocketContext);
   const [contacts, setContacts] = useState([]);
   const [loading, setLoading] = useState(true);
-
+  const [username , setUsername] = useState("")
   // Fetch contacts data from the backend
   useEffect(() => {
+    if(localStorage.getItem('user')){
+      setUsername(JSON.parse(localStorage.getItem('user')).user.username)
+    }
+
     axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/users`)
       .then((response) => {
         const formattedContacts = response.data.map(user => ({
@@ -62,24 +66,7 @@ const Sidebar = () => {
   return (
     <div className="flex flex-col overflow-y-auto md:w-auto">
       <div className=" flex-1 overflow-y-auto p-4">
-        {/* Fixed AI Assistant */}
-        <div
-          key="my-ai-assistant"
-          className="flex items-center p-2 mb-2 bg-white bg-opacity-20 rounded-lg shadow-lg cursor-pointer"
-          onClick={() => handleContactClick({
-            id: 4,
-            name: "My AI Assistant",
-            profilePicture: "", // No profile picture for AI Assistant
-            isAI: true,
-          })}
-        >
-          <div className={`w-10 h-10 rounded-full mr-3 object-cover bg-gradient-to-r from-indigo-500 to-purple-500`}></div>
-          <div>
-            <p className="text-sm font-semibold text-white">My AI Assistant</p>
-            <p className="text-xs text-gray-300">Active now</p>
-          </div>
-        </div>
-        
+    
         {/* Online Users Section */}
         {onlineContacts.length > 0 && (
           <div className="mb-4">
@@ -96,7 +83,7 @@ const Sidebar = () => {
                   className="w-10 h-10 rounded-full mr-3 object-cover"
                 />
                 <div>
-                  <p className="text-sm font-semibold text-white">{contact.name}</p>
+                  <p className="text-sm font-semibold text-white">{contact.name == username? `${contact.name}  (You)`:contact.name}</p>
                   <p className="text-xs text-gray-300">Active now</p>
                 </div>
               </div>
