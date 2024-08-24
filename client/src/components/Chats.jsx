@@ -201,11 +201,13 @@ function Chat() {
             const responseText = response.data.responseText;
 
             const aiResponse = {
+              prompt:responseText,
               text: responseText,
               senderId: senderId,
               id: Date.now(),
               contactId,
               username:JSON.parse(localStorage.getItem("user")).user.username || "",
+              settings
             };
 
             setMessages((prevMessages) => [...prevMessages, aiResponse]);
