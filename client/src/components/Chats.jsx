@@ -35,7 +35,7 @@ function Chat() {
   const [showSettings, setShowSettings] = useState(false);
   const [showCommands, setShowCommands] = useState(false);
   const [selectedCommand, setSelectedCommand] = useState(null);
-
+  const navigate = useNavigate();
   const commands = [
     { name: "/imagine", description: "Generate your images with AI" },
   ];
@@ -98,7 +98,7 @@ function Chat() {
     if (contactId) {
       fetchMessages();
     }
-  }, [contactId, senderId, setMessages]);
+  }, [contactId, senderId, setMessages,navigate]);
 
   useEffect(() => {
     if (messagesEndRef.current) {
@@ -274,7 +274,7 @@ function Chat() {
     };
   }, []);
 
-  const navigate = useNavigate();
+  
   useEffect(() => {
     if (isLastScreenClosed) {
       navigate("/");
