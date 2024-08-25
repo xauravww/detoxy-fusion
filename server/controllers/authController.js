@@ -1,5 +1,5 @@
 import User from '../model/User.js';
-import { jwtDecode } from 'jwt-decode';
+import {jwtDecode} from 'jwt-decode';
 import crypto from 'crypto';
 import jwt from 'jsonwebtoken';
 import sendEmail from '../utils/sendEmail.js';
@@ -46,7 +46,11 @@ export const signUp = async (req, res) => {
 // Google OAuth Sign-Up
 export const googleSignUp = async (req, res) => {
   try {
-    const { token } = req.body;
+    const token = req.body.token || req.headers.authorization?.split(' ')[1];
+    if (!token) {
+      return res.status(400).json({ error: 'Token is required for Google Sign-Up' });
+    }
+
     const decodedToken = jwtDecode(token);
 
     const { name, email, sub, picture: profilePicture } = decodedToken;
@@ -107,7 +111,11 @@ export const signIn = async (req, res) => {
 // Google OAuth Sign-In
 export const googleSignIn = async (req, res) => {
   try {
-    const { token } = req.body;
+    const token = req.body.token || req.headers.authorization?.split(' ')[1];
+    if (!token) {
+      return res.status(400).json({ error: 'Token is required for Google Sign-In' });
+    }
+
     const decodedToken = jwtDecode(token);
 
     const { email } = decodedToken;
@@ -142,9 +150,7 @@ export const forgotPassword = async (req, res) => {
 
     await user.save({ validateBeforeSave: false });
 
-  
-
-    const message = `Your  reset  password  is :- \n\n ${resetToken} \n\nIf you have not requested this email then, please ignore it.`;
+    const message = `Your reset password token is:\n\n${resetToken}\n\nIf you did not request this, please ignore this email.`;
 
     try {
       await sendEmail({
@@ -163,13 +169,12 @@ export const forgotPassword = async (req, res) => {
 
       await user.save({ validateBeforeSave: false });
 
-      return res.status(500).json({ error: err });
+      return res.status(500).json({ error: err.message });
     }
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 };
-
 
 // Reset Password
 export const resetPassword = async (req, res) => {
