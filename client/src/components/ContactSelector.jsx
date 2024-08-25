@@ -3,45 +3,37 @@ import { sidebarContext } from "../context/Sidebar";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
-const contacts = [
-  {
-    id: 1,
-    name: "Saurav Maheshwari",
-    status: "Active now",
-    bgColor: "bg-gradient-to-r from-green-500 to-blue-500",
-    isAI: false,
-  },
-  {
-    id: 2,
-    name: "John Doe",
-    status: "Away",
-    bgColor: "bg-gradient-to-r from-red-500 to-yellow-500",
-    isAI: false,
-  },
-  {
-    id: 3,
-    name: "Jane Smith",
-    status: "Do not disturb",
-    bgColor: "bg-gradient-to-r from-gray-500 to-black",
-    isAI: false,
-  },
-  {
-    id: 4,
-    name: "My AI Assistant",
-    status: "Active now",
-    bgColor: "bg-gradient-to-r from-indigo-500 to-purple-500",
-    isAI: true,
-  },
-];
-
 const ContactSelector = ({ onSelect, onClose, imageDetails }) => {
   const { selectedChat } = useContext(sidebarContext);
   const [searchQuery, setSearchQuery] = useState("");
+  const [contacts, setContacts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
-    console.log('imageDetails', imageDetails);
-  }, [imageDetails]);
+    const fetchContacts = async () => {
+      try {
+        const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/users`);
+        console.log("API response data:", response.data); // Debugging line
+        const formattedContacts = response.data.map(user => ({
+          id: user._id,
+          name: user.username,
+          status: user.status || "Offline", // Default status if not provided
+          bgColor: "bg-gray-500", // Default background color or set as needed
+          isAI: false, // Adjust if you have AI contacts
+        }));
+        setContacts(formattedContacts);
+      } catch (error) {
+        console.error("Error fetching contacts:", error);
+        setError("Failed to fetch contacts");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchContacts();
+  }, []);
 
   const handleContactClick = (contact) => {
     onSelect(contact);
@@ -49,13 +41,13 @@ const ContactSelector = ({ onSelect, onClose, imageDetails }) => {
 
   const handlePostToFeed = async () => {
     if (imageDetails) {
-      console.log("imagdetails feed k liye ye aayi h bs "+JSON.stringify(imageDetails));
+      console.log("Image details for feed:", JSON.stringify(imageDetails));
       const payload = {
-        url: imageDetails.imageUrl, 
-        prompt: imageDetails.prompt || "", 
+        url: imageDetails.imageUrl,
+        prompt: imageDetails.text || "",
         user: imageDetails.user?._id || JSON.parse(localStorage.getItem("user")).id,
-        settings: imageDetails.settings, 
-        username: imageDetails.username
+        settings: imageDetails.settings,
+        username: imageDetails.username,
       };
 
       try {
@@ -79,6 +71,32 @@ const ContactSelector = ({ onSelect, onClose, imageDetails }) => {
     contact.name.toLowerCase().includes(searchQuery.toLowerCase()) &&
     contact.id !== selectedChat?.id // Exclude the current chat
   );
+
+  if (loading) {
+    return (
+      <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-60">
+        <div className="bg-gray-800 p-4 rounded-lg w-80 max-w-md text-white">
+          <p>Loading contacts...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-60">
+        <div className="bg-gray-800 p-4 rounded-lg w-80 max-w-md text-white">
+          <p>{error}</p>
+          <button
+            className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 mt-4"
+            onClick={() => setLoading(true)} // Retry fetching data
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-60">

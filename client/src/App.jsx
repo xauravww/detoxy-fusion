@@ -32,12 +32,12 @@ const App = () => {
     if(localStorage.getItem('user')!=null ){
       setSelectedChat(
         {
-          id: JSON.parse(localStorage.getItem("user")).user._id,
-          name: JSON.parse(localStorage.getItem("user")).user.username || "Asdasd",
+          id: JSON.parse(localStorage.getItem("user"))?.user?._id || "guest_id",
+          name: JSON.parse(localStorage.getItem("user"))?.user?.username || "guest_username",
           status: "Active now",
           bgColor: "bg-gradient-to-r from-indigo-500 to-purple-500",
           isAI: true,
-          profilePicture: JSON.parse(localStorage.getItem("user")).user.profilePicture,
+          profilePicture: JSON.parse(localStorage.getItem("user"))?.user?.profilePicture || "/assets/anonymous.svg",
         }
       )
     }

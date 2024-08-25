@@ -1,5 +1,5 @@
 import User from '../model/User.js'; // Import the User model
-
+import GeneratedImage from '../model/Posts.js';
 export const createUser = async (req, res) => {
   try {
     const { name, email, profilePicture, onlineStatus, friendList, userPosts, username, token } = req.body;
@@ -74,12 +74,21 @@ export const updateUser = async (req, res) => {
 // Delete a user by ID
 export const deleteUser = async (req, res) => {
   try {
-    // Find and delete user by ID
-    const user = await User.findByIdAndDelete(req.params.id);
+    const userId = req.params.id;
+
+    // Find the user by ID
+    const user = await User.findById(userId);
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
     }
-    res.json({ message: 'User deleted successfully' });
+
+    // Delete posts associated with the user
+    await GeneratedImage.deleteMany({ user: userId });
+
+    // Delete the user
+    await User.findByIdAndDelete(userId);
+
+    res.json({ message: 'User and associated posts deleted successfully' });
   } catch (error) {
     res.status(400).json({ error: error.message });
   }

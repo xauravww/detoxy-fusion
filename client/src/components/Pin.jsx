@@ -48,8 +48,8 @@ const Pin = ({ pin }) => {
   return (
     <div className="relative group mx-1 my-2">
       <img
-        src={pin.url}
-        alt={`Pin ${pin.id}`}
+        src={pin?.url}
+        alt={`Pin ${pin?.id}`}
         className="pin-image w-full h-auto object-cover transition-transform duration-300 group-hover:scale-105"
       />
       <div className="absolute inset-0 flex items-center justify-center opacity-0 transition-opacity duration-300 group-hover:opacity-100 bg-black bg-opacity-50">
@@ -62,10 +62,10 @@ const Pin = ({ pin }) => {
           </div>
           <div className="absolute bottom-2 right-2" onClick={()=>{
             console.log(JSON.stringify(pin))
-            navigate(`/${pin.username}`)
+            navigate(`/${pin?.username}`)
           }}>
             <img
-              src={pin.user.profilePicture || "/assets/anonymous.svg"}
+              src={pin?.user?.profilePicture || "/assets/anonymous.svg"}
               alt="Made by"
               className="w-12 h-12 rounded-full border-2 border-white cursor-pointer"
             />

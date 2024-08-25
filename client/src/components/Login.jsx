@@ -22,48 +22,55 @@ const Login = () => {
       navigate('/feed');
     }
   }, [navigate]);
-
   const handleGoogleSuccess = async (response) => {
     try {
       const decoded = jwtDecode(response.credential);
       const { name, email, picture, sub } = decoded;
-
+  
       const userData = {
         name,
         email,
         profilePicture: picture,
         googleId: sub,
       };
-
+  
       let user;
+  
       try {
+        // Try to sign in the user first
         user = await googleSignIn(response.credential);
+        console.log('User signed in successfully:', user);
       } catch (error) {
         if (error.message.includes('User not found')) {
+          // If user is not found, sign them up and then sign in
           await googleSignUp(response.credential);
+          user = await googleSignIn(response.credential);
+          console.log('User signed up and then signed in successfully:', user);
         } else {
+          // Handle other errors
           throw error;
         }
       }
-
-      // console.log("user ye mila h ",user)
+  
+      // Save user data to localStorage
       localStorage.setItem('user', JSON.stringify({
         isLoggedIn: true,
         ...userData,
-        id: user.user._id, 
-        user:user.user
+        id: user?.user?._id, 
+        user:user?.user
       }));
-
+  
       navigate('/feed');
     } catch (error) {
       console.error("Error handling Google login:", error);
       alert("An error occurred during Google login. Please try again.");
     }
   };
+  
 
-  const handleGoogleError = () => {
+  const handleGoogleError = (err) => {
     console.error("Google login failed");
-    alert("Failed to log in with Google. Please try again.");
+    alert(err);
   };
 
   const handleFormChange = (e) => {
@@ -102,9 +109,9 @@ const Login = () => {
   };
 
   return (
-    <div className="flex justify-center items-center h-screen bg-gradient-to-r from-gray-800 via-gray-900 to-black">
+    <div className="flex justify-center items-center h-screen bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500">
       <div className="flex flex-col justify-center items-center p-6 bg-gray-800 bg-opacity-80 rounded-lg shadow-lg">
-        <img src={logo} alt="logo" className="mb-4 w-32" />
+        {/* <img src={logo} alt="logo" className="mb-4 w-32" /> */}
         <h1 className="text-3xl font-bold text-white mb-6">{isSignUp ? 'Sign Up' : 'Login'}</h1>
        
         {isSignUp ? (
@@ -115,7 +122,7 @@ const Login = () => {
               value={formData.name}
               onChange={handleFormChange}
               placeholder="Name"
-              className="mb-2 p-2 rounded bg-white text-black"
+              className="mb-2 p-2 rounded bg-white text-black outline-none"
               required
             />
             <input
@@ -124,7 +131,7 @@ const Login = () => {
               value={formData.email}
               onChange={handleFormChange}
               placeholder="Email"
-              className="mb-2 p-2 rounded bg-white text-black"
+              className="mb-2 p-2 rounded bg-white text-black outline-none"
               required
             />
             <input
@@ -133,7 +140,7 @@ const Login = () => {
               value={formData.password}
               onChange={handleFormChange}
               placeholder="Password"
-              className="mb-2 p-2 rounded bg-white text-black"
+              className="mb-2 p-2 rounded bg-white text-black outline-none"
               required
             />
             <input
@@ -142,7 +149,7 @@ const Login = () => {
               value={formData.profilePicture}
               onChange={handleFormChange}
               placeholder="Profile Picture URL (optional)"
-              className="mb-2 p-2 rounded bg-white text-black"
+              className="mb-2 p-2 rounded bg-white text-black outline-none"
             />
             <input
               type="text"
@@ -150,7 +157,7 @@ const Login = () => {
               value={formData.username}
               onChange={handleFormChange}
               placeholder="Username"
-              className="mb-2 p-2 rounded bg-white text-black"
+              className="mb-2 p-2 rounded bg-white text-black outline-none"
               required
             />
             <button
@@ -168,7 +175,7 @@ const Login = () => {
               value={formData.email}
               onChange={handleFormChange}
               placeholder="Email"
-              className="mb-2 p-2 rounded bg-white text-black"
+              className="mb-2 p-2 rounded bg-white text-black outline-none"
               required
             />
             <input
@@ -177,7 +184,7 @@ const Login = () => {
               value={formData.password}
               onChange={handleFormChange}
               placeholder="Password"
-              className="mb-2 p-2 rounded bg-white text-black"
+              className="mb-2 p-2 rounded bg-white text-black outline-none"
               required
             />
             <button
@@ -209,13 +216,14 @@ const Login = () => {
           >
             {isSignUp ? 'Switch to Login' : 'Switch to Sign Up'}
           </div>
-          ---------or--------- 
-          <div
-            onClick={handleGuestLogin}
+          {/* ---------or---------  */}
+          {/* <div
+            // onClick={handleGuestLogin}
             className="text-[#dadada]  cursor-pointer"
-          >
-            Guest Login
-          </div>
+          > */}
+            {/* Guest Login */}
+            {/* Coming soon...
+          </div> */}
         </div>
       </div>
     </div>

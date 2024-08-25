@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import fallbackPic from '../../public/assets/anonymous.svg'; 
+import axios from 'axios';
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -48,10 +49,18 @@ const Profile = () => {
     fetchProfileData();
   }, [username]);
 
-  const handleDeleteAccount = () => {
+  const handleDeleteAccount = async () => {
     console.log('Account deleted');
-    localStorage.removeItem('user');
-    navigate('/login');
+    const id  = JSON.parse(localStorage.getItem("user")).user._id 
+    const response = await axios.delete(
+      `${import.meta.env.VITE_BACKEND_URL}/api/users/${id}`
+    );
+
+    if(response.status === 200){
+      alert('Account deleted successfully');
+      localStorage.removeItem('user');
+      navigate('/');
+    }
   };
 
   const handleFriendRequest = (friendName) => {

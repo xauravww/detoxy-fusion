@@ -12,7 +12,7 @@ const Sidebar = () => {
   // Fetch contacts data from the backend
   useEffect(() => {
     if(localStorage.getItem('user')){
-      setUsername(JSON.parse(localStorage.getItem('user')).user.username)
+      setUsername(JSON.parse(localStorage.getItem('user'))?.user?.username || "guest_username")
     }
 
     axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/users`)

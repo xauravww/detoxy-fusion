@@ -9,7 +9,7 @@ const Navbar = () => {
   };
 
 
-  const username = JSON.parse(localStorage.getItem('user')) ? JSON.parse(localStorage.getItem('user')).user.username : '';
+  const username = JSON.parse(localStorage.getItem('user')) ? JSON.parse(localStorage.getItem('user'))?.user?.username : '';
  
   return (
     <nav className="bg-gray-900 text-white p-4 shadow-md h-[11vh] lg:h-[10vh] z-[3] flex flex-col justify-center">
