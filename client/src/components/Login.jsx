@@ -26,46 +26,46 @@ const Login = () => {
     try {
       const decoded = jwtDecode(response.credential);
       const { name, email, picture, sub } = decoded;
-  
+    
       const userData = {
         name,
         email,
         profilePicture: picture,
         googleId: sub,
       };
-  
+    
       let user;
-  
+    
       try {
         // Try to sign in the user first
         user = await googleSignIn(response.credential);
-        console.log('User signed in successfully:', user);
       } catch (error) {
         if (error.message.includes('User not found')) {
           // If user is not found, sign them up and then sign in
           await googleSignUp(response.credential);
           user = await googleSignIn(response.credential);
-          console.log('User signed up and then signed in successfully:', user);
         } else {
           // Handle other errors
           throw error;
         }
       }
-  
-      // Save user data to localStorage
+    
+      // Save JWT token and user data to localStorage
+      localStorage.setItem('JWT_TOKEN', user.token  || user.token_JWT); // Store the JWT token
       localStorage.setItem('user', JSON.stringify({
         isLoggedIn: true,
         ...userData,
-        id: user?.user?._id, 
-        user:user?.user
+        id: user.user._id, 
+        user: user.user
       }));
-  
+    
       navigate('/feed');
     } catch (error) {
       console.error("Error handling Google login:", error);
       alert("An error occurred during Google login. Please try again.");
     }
   };
+  
   
 
   const handleGoogleError = (err) => {
@@ -81,7 +81,7 @@ const Login = () => {
   const handleFormSubmit = async (e) => {
     e.preventDefault();
     const { name, email, password, profilePicture, username } = formData;
-
+  
     try {
       let user;
       if (isSignUp) {
@@ -89,19 +89,23 @@ const Login = () => {
       } else {
         user = await emailSignIn(email, password);
       }
-
+  
+      // Save JWT token and user data to localStorage
+      localStorage.setItem('JWT_TOKEN', user.token || user.token_JWT); // Store the JWT token
       localStorage.setItem('user', JSON.stringify({
         isLoggedIn: true,
         ...formData,
-        id: user._id, // Assuming user object contains _id
+        id:user.user._id, 
+        user: user.user
       }));
-
+  
       navigate('/feed');
     } catch (error) {
       console.error(`Error during ${isSignUp ? 'sign-up' : 'sign-in'}:`, error);
       alert(`Failed to ${isSignUp ? 'sign up' : 'sign in'}. Please try again.`);
     }
   };
+  
 
   const handleGuestLogin = () => {
     localStorage.setItem('user', JSON.stringify({ isLoggedIn: true }));
@@ -217,13 +221,13 @@ const Login = () => {
             {isSignUp ? 'Switch to Login' : 'Switch to Sign Up'}
           </div>
           {/* ---------or---------  */}
-          {/* <div
-            // onClick={handleGuestLogin}
+          <div
+            onClick={()=>navigate("/forgot")}
             className="text-[#dadada]  cursor-pointer"
-          > */}
-            {/* Guest Login */}
-            {/* Coming soon...
-          </div> */}
+          >
+            {/* Guest Login coming soon */}
+            Forgot Password ?
+           </div>
         </div>
       </div>
     </div>

@@ -1,5 +1,6 @@
 import User from '../model/User.js'; // Import the User model
 import GeneratedImage from '../model/Posts.js';
+import Message from '../model/Message.js';
 export const createUser = async (req, res) => {
   try {
     const { name, email, profilePicture, onlineStatus, friendList, userPosts, username, token } = req.body;
@@ -85,15 +86,22 @@ export const deleteUser = async (req, res) => {
     // Delete posts associated with the user
     await GeneratedImage.deleteMany({ user: userId });
 
+    // Delete messages where the user is either the sender or receiver
+    await Message.deleteMany({ 
+      $or: [
+        { senderId: userId },
+        { contactId: userId }
+      ]
+    });
+
     // Delete the user
     await User.findByIdAndDelete(userId);
 
-    res.json({ message: 'User and associated posts deleted successfully' });
+    res.json({ message: 'User, associated posts, and messages deleted successfully' });
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
 };
-
 // Get a user by username
 export const getUserByUsername = async (req, res) => {
   try {

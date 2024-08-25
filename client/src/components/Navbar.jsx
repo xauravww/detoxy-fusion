@@ -5,6 +5,8 @@ const Navbar = () => {
 
   const handleLogout = () => {
     localStorage.removeItem('user');
+    localStorage.removeItem('JWT_TOKEN');
+
     navigate('/login');
   };
 

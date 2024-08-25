@@ -7,6 +7,9 @@ import {
   deleteUser,
   getUserByUsername
 } from '../controllers/userController.js';
+import authorize from '../middleware/authorize.js';
+
+
 
 const router = express.Router();
 
@@ -21,9 +24,9 @@ router.get('/profile/:username', getUserByUsername);
 router.get('/', getAllUsers);
 
 // Route to update a user by ID
-router.put('/:id', updateUser);
+router.put('/:id',authorize, updateUser);
 
 // Route to delete a user by ID
-router.delete('/:id', deleteUser);
+router.delete('/:id',authorize, deleteUser);
 
 export default router;

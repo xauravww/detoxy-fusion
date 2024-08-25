@@ -1,5 +1,15 @@
 import User from '../model/User.js';
-import {jwtDecode} from 'jwt-decode';
+import { jwtDecode } from 'jwt-decode';
+import crypto from 'crypto';
+import jwt from 'jsonwebtoken';
+import sendEmail from '../utils/sendEmail.js';
+
+// Helper function to create a JWT token
+const createToken = (id) => {
+  return jwt.sign({ id }, process.env.JWT_SECRET, {
+    expiresIn: process.env.JWT_EXPIRES_IN || '7d',
+  });
+};
 
 // Traditional Sign-Up
 export const signUp = async (req, res) => {
@@ -23,7 +33,11 @@ export const signUp = async (req, res) => {
     });
 
     await newUser.save();
-    res.status(201).json(newUser);
+
+    // Generate a token for the new user
+    const token = createToken(newUser._id);
+
+    res.status(201).json({ user: newUser, token });
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
@@ -53,7 +67,11 @@ export const googleSignUp = async (req, res) => {
     });
 
     await newUser.save();
-    res.status(201).json(newUser);
+
+    // Generate a token for the new user
+    const token_JWT = createToken(newUser._id);
+
+    res.status(201).json({ user: newUser, token_JWT });
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
@@ -77,7 +95,10 @@ export const signIn = async (req, res) => {
       return res.status(400).json({ error: 'Invalid credentials' });
     }
 
-    res.status(200).json({ message: 'Sign-in successful', user });
+    // Generate a token for the authenticated user
+    const token = createToken(user._id);
+
+    res.status(200).json({ message: 'Sign-in successful', user, token });
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
@@ -96,8 +117,90 @@ export const googleSignIn = async (req, res) => {
       return res.status(400).json({ error: 'User not found, please sign up' });
     }
 
-    res.status(200).json({ message: 'Google sign-in successful', user });
+    // Generate a token for the authenticated user
+    const token_JWT = createToken(user._id);
+
+    res.status(200).json({ message: 'Google sign-in successful', user, token_JWT });
   } catch (error) {
     res.status(400).json({ error: error.message });
+  }
+};
+
+// Forgot Password
+export const forgotPassword = async (req, res) => {
+  const { email } = req.body;
+
+  try {
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    // Get reset token
+    const resetToken = user.getResetPasswordToken();
+
+    await user.save({ validateBeforeSave: false });
+
+  
+
+    const message = `Your  reset  password  is :- \n\n ${resetToken} \n\nIf you have not requested this email then, please ignore it.`;
+
+    try {
+      await sendEmail({
+        email: user.email,
+        subject: 'Password reset token',
+        message,
+      });
+
+      res.status(200).json({
+        success: true,
+        message: 'Email sent',
+      });
+    } catch (err) {
+      user.resetPasswordToken = undefined;
+      user.resetPasswordExpire = undefined;
+
+      await user.save({ validateBeforeSave: false });
+
+      return res.status(500).json({ error: err });
+    }
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+
+// Reset Password
+export const resetPassword = async (req, res) => {
+  // Hash the token sent in the URL
+  const resetPasswordToken = crypto
+    .createHash('sha256')
+    .update(req.params.token)
+    .digest('hex');
+
+  try {
+    const user = await User.findOne({
+      resetPasswordToken,
+      resetPasswordExpire: { $gt: Date.now() },
+    });
+
+    if (!user) {
+      return res.status(400).json({ error: 'Invalid token or token expired' });
+    }
+
+    // Set new password
+    user.password = req.body.password;
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpire = undefined;
+
+    await user.save();
+
+    // Generate a token for the user after password reset
+    const token = createToken(user._id);
+
+    res.status(200).json({ success: true, message: 'Password updated successfully', token });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
 };

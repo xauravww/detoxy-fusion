@@ -51,10 +51,14 @@ const ContactSelector = ({ onSelect, onClose, imageDetails }) => {
       };
 
       try {
-        const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/posts`, payload);
+        const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/posts`, payload,{
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("JWT_TOKEN")}`,
+          },
+        });
         if (response.status === 201) {
           alert('Chat posted to feed!');
-          navigate('/feed', { state: { scrollToBottom: true } }); // Navigate to feed and set scrollToBottom
+          navigate('/feed', { state: { scrollToBottom: true } });
         } else {
           alert('Failed to post chat to feed.');
         }

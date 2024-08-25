@@ -49,3 +49,26 @@ export const googleSignIn = async (googleToken) => {
     throw new Error(error.response?.data?.error || 'Failed to sign in with Google');
   }
 };
+
+
+// Forgot Password
+export const forgotPassword = async (email) => {
+  try {
+    const response = await axios.post(`${API_URL}/forgot`, { email });
+    return response.data;
+  } catch (error) {
+    console.error('Error sending forgot password request:', error);
+    throw error;
+  }
+};
+
+// Reset Password
+export const resetPassword = async (token, password) => {
+  try {
+    const response = await axios.post(`${API_URL}/reset/${token}`, { password });
+    return response.data;
+  } catch (error) {
+    console.error('Error resetting password:', error);
+    throw error;
+  }
+};

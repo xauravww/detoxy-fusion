@@ -6,11 +6,12 @@ import {
   updatePost,
   deletePost,
 } from '../controllers/postController.js';
+import authorize from '../middleware/authorize.js';
 
 const router = express.Router();
 
 // Route to create a new post
-router.post('/', createPost);
+router.post('/', authorize, createPost);
 
 // Route to get a post by ID
 router.get('/:id', getPostById);
@@ -19,9 +20,11 @@ router.get('/:id', getPostById);
 router.get('/', getAllPosts);
 
 // Route to update a post by ID
-router.put('/:id', updatePost);
+router.put('/:id',authorize, updatePost);
 
 // Route to delete a post by ID
-router.delete('/:id', deletePost);
+router.delete('/:id',authorize, deletePost);
+
+
 
 export default router;

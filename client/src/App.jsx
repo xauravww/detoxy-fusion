@@ -6,42 +6,39 @@ import Feed from './components/Feed';
 import Navbar from './components/Navbar';
 import Profile from './components/Profile';
 import { sidebarContext } from './context/Sidebar';
+import ForgotOrResetPassword from './components/ForgotOrResetPassword';
 
 const App = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [isLoggedIn, setIsLoggedIn] = useState(null); 
-  const {setSelectedChat} = useContext(sidebarContext)
+  const { setSelectedChat } = useContext(sidebarContext);
 
   useEffect(() => {
-    const user = localStorage.getItem('user');
-    if (user && JSON.parse(user).isLoggedIn) {
+    const user = JSON.parse(localStorage.getItem('user'));
+    if (user && user.isLoggedIn) {
       setIsLoggedIn(true);
-      
     } else {
       setIsLoggedIn(false);
-      if (location.pathname !== '/login') {
+      if (location.pathname !== '/login' && location.pathname !== '/forgot') {
         navigate('/login'); // Redirect to login if no user is logged in
       }
     }
-
   }, [navigate, location.pathname]);
 
-
-  useEffect(()=>{
-    if(localStorage.getItem('user')!=null ){
-      setSelectedChat(
-        {
-          id: JSON.parse(localStorage.getItem("user"))?.user?._id || "guest_id",
-          name: JSON.parse(localStorage.getItem("user"))?.user?.username || "guest_username",
-          status: "Active now",
-          bgColor: "bg-gradient-to-r from-indigo-500 to-purple-500",
-          isAI: true,
-          profilePicture: JSON.parse(localStorage.getItem("user"))?.user?.profilePicture || "/assets/anonymous.svg",
-        }
-      )
+  useEffect(() => {
+    if (isLoggedIn) {
+      const user = JSON.parse(localStorage.getItem('user'));
+      setSelectedChat({
+        id: user?.user?._id || 'guest_id',
+        name: user?.user?.username || 'guest_username',
+        status: 'Active now',
+        bgColor: 'bg-gradient-to-r from-indigo-500 to-purple-500',
+        isAI: true,
+        profilePicture: user?.user?.profilePicture || '/assets/anonymous.svg',
+      });
     }
-  },[isLoggedIn])
+  }, [isLoggedIn, setSelectedChat]);
 
   // Handle the loading state while checking if the user is logged in
   if (isLoggedIn === null) {
@@ -56,7 +53,8 @@ const App = () => {
         <Route path='/chats' element={isLoggedIn ? <Chats /> : <Login />} />
         <Route path='/feed' element={isLoggedIn ? <Feed /> : <Login />} />
         <Route path='/:username' element={isLoggedIn ? <Profile /> : <Login />} />
-        <Route path='/' element={<Login />} />
+        <Route path='/forgot' element={<ForgotOrResetPassword />} />
+        <Route path='/' element={isLoggedIn ? <Feed /> : <Login />} />
         <Route path='/*' element={isLoggedIn ? <Feed /> : <Login />} />
       </Routes>
     </div>

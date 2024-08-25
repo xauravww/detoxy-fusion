@@ -53,7 +53,12 @@ const Profile = () => {
     console.log('Account deleted');
     const id  = JSON.parse(localStorage.getItem("user")).user._id 
     const response = await axios.delete(
-      `${import.meta.env.VITE_BACKEND_URL}/api/users/${id}`
+      `${import.meta.env.VITE_BACKEND_URL}/api/users/${id}`,
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("JWT_TOKEN")}`,
+        },
+      }
     );
 
     if(response.status === 200){

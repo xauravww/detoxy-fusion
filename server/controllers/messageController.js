@@ -1,3 +1,4 @@
+
 import Message from '../model/Message.js';
 
 // Function to handle sending a new message

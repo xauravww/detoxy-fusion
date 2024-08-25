@@ -26,7 +26,7 @@ const matcher = new RegExpMatcher({
 function Chat() {
   const { sendMessage, messages, setMessages, message, input, setInput } =
     useContext(webSocketContext);
- 
+
   const [loading, setLoading] = useState(false);
 
   const [sendingStatus, setSendingStatus] = useState({});
@@ -76,14 +76,17 @@ function Chat() {
   const senderId = JSON.parse(localStorage.getItem("user")).id;
   const contactId = selectedChat?.id;
   const fetchMessages = async () => {
-    console.log("sender id: " + senderId)
-    console.log("contact id: " + contactId)
+    console.log("sender id: " + senderId);
+    console.log("contact id: " + contactId);
     setLoading(true);
     try {
       const response = await axios.get(
         `${import.meta.env.VITE_BACKEND_URL}/api/message`,
         {
           params: { senderId, contactId },
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("JWT_TOKEN")}`,
+          },
         }
       );
       setMessages(response.data.messages);
@@ -94,11 +97,10 @@ function Chat() {
     }
   };
   useEffect(() => {
-   
-    if (contactId) {
+    
       fetchMessages();
-    }
-  }, [contactId, senderId, setMessages,navigate]);
+    
+  }, [contactId, senderId, setMessages, navigate]);
 
   useEffect(() => {
     if (messagesEndRef.current) {
@@ -145,7 +147,8 @@ function Chat() {
             settings,
             user: JSON.parse(localStorage.getItem("user")).user,
             type: "image",
-            username:JSON.parse(localStorage.getItem("user")).user.username || "",
+            username:
+              JSON.parse(localStorage.getItem("user")).user.username || "",
           };
 
           setMessages((prevMessages) => [...prevMessages, aiMessage]);
@@ -161,7 +164,12 @@ function Chat() {
             settings,
             user: JSON.parse(localStorage.getItem("user")).user,
             type: "image",
-            username:JSON.parse(localStorage.getItem("user")).user.username || "",
+            username:
+              JSON.parse(localStorage.getItem("user")).user.username || "",
+          },{
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem('JWT_TOKEN')}`,
+            },
           });
 
           console.log("getting imageurl in frontend after posting " + imageUrl);
@@ -186,8 +194,13 @@ function Chat() {
                 id: messageId,
                 contactId,
                 type: "message",
-                username:JSON.parse(localStorage.getItem("user")).user.username || "",
+                username:
+                  JSON.parse(localStorage.getItem("user")).user.username || "",
               }
+              ,{
+                headers: {
+                  Authorization: `Bearer ${localStorage.getItem('JWT_TOKEN')}`,
+                },}
             );
 
             sendMessage({
@@ -195,19 +208,21 @@ function Chat() {
               senderId,
               id: messageId,
               contactId,
-              username:JSON.parse(localStorage.getItem("user")).user.username || "",
+              username:
+                JSON.parse(localStorage.getItem("user")).user.username || "",
             });
 
             const responseText = response.data.responseText;
 
             const aiResponse = {
-              prompt:responseText,
+              prompt: responseText,
               text: responseText,
               senderId: senderId,
               id: Date.now(),
               contactId,
-              username:JSON.parse(localStorage.getItem("user")).user.username || "",
-              settings
+              username:
+                JSON.parse(localStorage.getItem("user")).user.username || "",
+              settings,
             };
 
             setMessages((prevMessages) => [...prevMessages, aiResponse]);
@@ -264,8 +279,7 @@ function Chat() {
     const listener = document.addEventListener("click", () => {
       setShowCommands(false);
     });
-    fetchMessages()
-    
+    fetchMessages();
 
     return () => {
       if (listener) {
@@ -274,7 +288,6 @@ function Chat() {
     };
   }, []);
 
-  
   useEffect(() => {
     if (isLastScreenClosed) {
       navigate("/");
@@ -306,10 +319,13 @@ function Chat() {
             <>
               <div className="flex items-center justify-between p-4 bg-gradient-to-r from-blue-600 to-teal-600 text-white rounded-t-lg">
                 <div className="flex items-center">
-                
                   <div className="w-10 h-10 bg-white bg-opacity-30 rounded-full mr-3">
                     {/* img here */}
-                    <img src={selectedChat.profilePicture} alt="avatar" className="rounded-full object-cover w-full h-full" />
+                    <img
+                      src={selectedChat.profilePicture || "/assets/anonymous.svg"}
+                      alt="avatar"
+                      className="rounded-full object-cover w-full h-full"
+                    />
                   </div>
                   <h2 className="text-lg font-semibold">{selectedChat.name}</h2>
                 </div>
