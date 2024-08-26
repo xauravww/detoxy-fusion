@@ -13,6 +13,7 @@ const Profile = () => {
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null); 
+  const [currentUserId, setCurrentUserId] = useState(JSON.parse(localStorage.getItem("user")).user._id); 
   const {username} = useParams()
   useEffect(() => {
     const fetchProfileData = async () => {
@@ -37,6 +38,7 @@ const Profile = () => {
           email: data.email,
           profilePicture: data.profilePicture || fallbackPic,
           friends: data.friendList || [],
+          id:data._id || ''
         });
       } catch (error) {
         setError(error.message); 
@@ -117,12 +119,14 @@ const Profile = () => {
           </ul>
         </div>
 
-        <button
+   {profile.id && profile.id==currentUserId && (
+    <button
           onClick={handleDeleteAccount}
           className="px-4 py-2 bg-red-500 text-white rounded-lg shadow-md hover:bg-red-400 transition-colors duration-300"
         >
           Delete Account
         </button>
+   )}
       </div>
     </div>
   );

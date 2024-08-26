@@ -88,7 +88,7 @@ export const WebSocketProvider = ({ children }) => {
   }, [isConnected]);
 
   return (
-    <webSocketContext.Provider value={{ sendMessage, isConnected, onlineUsers, messages,setMessages,input, setInput }}>
+    <webSocketContext.Provider value={{ socketRef,sendMessage, isConnected, onlineUsers, messages,setMessages,input, setInput }}>
       {children}
     </webSocketContext.Provider>
   );

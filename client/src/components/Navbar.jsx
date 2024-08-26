@@ -1,9 +1,12 @@
 import { Link, useNavigate } from 'react-router-dom';
+import { webSocketContext } from '../context/Websocket';
+import { useContext } from 'react';
 
 const Navbar = () => {
   const navigate = useNavigate();
-
+const {socketRef} = useContext(webSocketContext)
   const handleLogout = () => {
+    socketRef.current.close();
     localStorage.removeItem('user');
     localStorage.removeItem('JWT_TOKEN');
 

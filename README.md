@@ -1,5 +1,5 @@
 # Detoxy Fusion
-[Live Link]([URL](https://detoxy-fusion-1.onrender.com/))
+[Live Link](https://detoxy-fusion-1.onrender.com)
 
 Detoxy Fusion is a modern chat application that combines real-time messaging with AI-based toxicity filtering, image generation, and a flexible, user-friendly interface. It ensures user safety while providing a premium chat experience with various features like feed sections, JWT-based route protection, and more.
 

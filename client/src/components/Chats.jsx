@@ -62,19 +62,43 @@ function Chat() {
     }
   };
 
-  const handleDownloadImage = (imageUrl, fileName) => {
-    const link = document.createElement("a");
-    link.href = imageUrl;
-    link.download = fileName || "download";
 
-    document.body.appendChild(link);
-    link.click();
+  
 
-    document.body.removeChild(link);
+  const handleDownloadImage = async (message) => {
+    const imageUrl = message.imageUrl;
+    const fileName = message.fileName;
+    try {
+      console.log(imageUrl, fileName)
+      const response = await fetch(imageUrl, { mode: 'cors' });
+      console.log(response)
+      if (response.ok) {
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        
+        console.log(link);
+       
+        link.download = fileName || 'download.webp';
+        
+        document.body.appendChild(link);
+        link.click();
+  
+       
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(url);
+      } else {
+        console.error('Failed to download image:', response.statusText);
+      }
+    } catch (error) {
+      console.error('Error downloading the image:', error);
+    }
   };
-
+  
+  
   const senderId = JSON.parse(localStorage.getItem("user")).id;
-  const contactId = selectedChat?.id;
+  let contactId = selectedChat?.id || JSON.parse(localStorage.getItem("user")).id
   const fetchMessages = async () => {
     console.log("sender id: " + senderId);
     console.log("contact id: " + contactId);
@@ -97,10 +121,17 @@ function Chat() {
     }
   };
   useEffect(() => {
+
+      fetchMessages();
+    
+  }, [contactId]);
+  useEffect(() => {
     
       fetchMessages();
     
-  }, [contactId, senderId, setMessages, navigate]);
+  }, []);
+
+  
 
   useEffect(() => {
     if (messagesEndRef.current) {
