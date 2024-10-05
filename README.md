@@ -1,6 +1,10 @@
 # Detoxy Fusion
 [Live Link](https://detoxy-fusion-1.onrender.com)
 
+# <span style="color: red;">⚠️ Warning: API Update in Progress ⚠️</span>
+
+I am updating my API as it has some bugs. Until then, you can use my Telegram bot [@xaurav_assistant_bot](https://t.me/xaurav_assistant_bot) to generate images. <hr/>
+
 Detoxy Fusion is a modern chat application that combines real-time messaging with AI-based toxicity filtering, image generation, and a flexible, user-friendly interface. It ensures user safety while providing a premium chat experience with various features like feed sections, JWT-based route protection, and more.
 
 
