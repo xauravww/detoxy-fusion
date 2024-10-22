@@ -37,7 +37,7 @@ function Chat() {
   const [selectedCommand, setSelectedCommand] = useState(null);
   const navigate = useNavigate();
   const commands = [
-    { name: "/imagine", description: "Generate your images with AI" },
+    { name: "/gen", description: "Generate your images with AI" },
   ];
 
   const { settings, setSettings } = useContext(settingsPanelContext);
@@ -157,8 +157,8 @@ function Chat() {
       setSendingStatus((prev) => ({ ...prev, [messageId]: "sending" }));
 
       try {
-        if (input.startsWith("/imagine ")) {
-          const prompt = input.slice(9); // to remove imagine
+        if (input.startsWith("/gen ")) {
+          const prompt = input.slice(4); // to remove imagine
           setLoading(true);
 
           const imageResponse = await axios.post(

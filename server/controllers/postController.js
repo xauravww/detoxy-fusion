@@ -44,13 +44,29 @@ export const getPostById = async (req, res) => {
 // Get all posts
 export const getAllPosts = async (req, res) => {
   try {
-    // Retrieve all posts
-    const posts = await GeneratedImage.find().populate('user', 'name email profilePicture');
-    res.json(posts);
+    
+    const posts = await GeneratedImage.find()
+      .populate('user', 'name email profilePicture')
+      .sort({ createdAt: -1 })
+
+   
+    const formattedPosts = posts.map(post => ({
+      id: post._id,
+      prompt: post.prompt,
+      imageUrl: post.imageUrl,
+      createdAt: post.createdAt, 
+      user: post.user,
+      url:post.url,
+      username:post.username
+
+    }));
+
+    res.json(formattedPosts);
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
 };
+
 
 // Update a post by ID
 export const updatePost = async (req, res) => {
