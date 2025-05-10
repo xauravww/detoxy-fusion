@@ -16,6 +16,7 @@ import HamsterLoader from "./Loader/HamsterLoader";
 import axios from "axios";
 import { webSocketContext } from "../context/Websocket";
 import { useNavigate } from "react-router-dom";
+import { toast } from 'react-toastify';
 
 const vaderAnalyzer = SentimentIntensityAnalyzer;
 const matcher = new RegExpMatcher({
@@ -213,7 +214,7 @@ function Chat() {
 
           if (hasOffensiveContent || isNegative) {
             setSendingStatus((prev) => ({ ...prev, [messageId]: "cant-send" }));
-            alert(
+            toast.error(
               "Message contains inappropriate content or negative sentiment and can't be sent."
             );
           } else {
@@ -263,7 +264,7 @@ function Chat() {
       } catch (error) {
         console.error("Error sending message:", error);
         setSendingStatus((prev) => ({ ...prev, [messageId]: "error" }));
-        alert("An error occurred while sending your message.");
+        toast.error("An error occurred while sending your message.");
       } finally {
         setShowCommands(false);
         setLoading(false);
@@ -326,7 +327,7 @@ function Chat() {
   }, [isLastScreenClosed]);
 
   return (
-    <div className="flex max-w-screen w-full bg-gradient-to-r from-gray-800 via-gray-900 to-black h-[calc(100vh-11vh)] md:h-[calc(100vh-11vh)] lg:h-[calc(100vh-10vh)]">
+    <div className="flex w-[100vw] h-[calc(100vh-13vh)] md:h-[calc(100vh-13vh)] lg:h-[calc(100vh-12vh)] bg-gradient-to-r from-gray-800 via-gray-900 to-black">
       <div
         className={`sidebar ${
           isOpen ? "hidden" : "w-[100vw]"

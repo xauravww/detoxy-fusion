@@ -5,7 +5,16 @@ import {
   getAllUsers,
   updateUser,
   deleteUser,
-  getUserByUsername
+  getUserByUsername,
+  sendFriendRequest,
+  acceptFriendRequest,
+  getFriends,
+  getFriendRequests,
+  blockUser,
+  unblockUser,
+  createGroup,
+  unfriendUser,
+  getFriendsSearch
 } from '../controllers/userController.js';
 import authorize from '../middleware/authorize.js';
 
@@ -28,5 +37,24 @@ router.put('/:id',authorize, updateUser);
 
 // Route to delete a user by ID
 router.delete('/:id',authorize, deleteUser);
+
+// Friend system routes
+router.post('/:id/friend-request', authorize, sendFriendRequest);
+router.post('/:id/accept-friend', authorize, acceptFriendRequest);
+router.get('/:id/friends', authorize, getFriends);
+router.get('/:id/requests', authorize, getFriendRequests);
+
+// Block/unblock user routes
+router.post('/:id/block', authorize, blockUser);
+router.post('/:id/unblock', authorize, unblockUser);
+
+// Group creation route
+router.post('/group', authorize, createGroup);
+
+// Unfriend user route
+router.post('/:id/unfriend', authorize, unfriendUser);
+
+// Friend search route
+router.get('/:id/friends/search', authorize, getFriendsSearch);
 
 export default router;

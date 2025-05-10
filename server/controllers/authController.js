@@ -30,6 +30,7 @@ export const signUp = async (req, res) => {
       password, // This will be hashed automatically by the pre-save hook
       username,
       profilePicture,
+      isGoogleAccount: false,
     });
 
     await newUser.save();
@@ -68,6 +69,7 @@ export const googleSignUp = async (req, res) => {
       password: generatedPassword,
       username: email.split('@')[0], // Default username if not provided
       profilePicture,
+      isGoogleAccount: true,
     });
 
     await newUser.save();
@@ -143,6 +145,10 @@ export const forgotPassword = async (req, res) => {
 
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
+    }
+
+    if (user.isGoogleAccount) {
+      return res.status(400).json({ error: 'Password reset is not available for Google accounts. Please use Google login.' });
     }
 
     // Get reset token

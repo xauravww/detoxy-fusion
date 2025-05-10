@@ -1,4 +1,3 @@
-
 import  { createContext, useState, useEffect, useRef, useCallback } from "react";
 
 // Create a context for WebSocket
@@ -19,11 +18,10 @@ export const WebSocketProvider = ({ children }) => {
         // console.log("Connected to WebSocket server");
         setIsConnected(true);
 
-        
-        const userId = JSON.parse(localStorage.getItem("user"))?.id; 
-        // console.log("sending this userid " + userId);
-        if (userId) {
-          socketRef.current.send(JSON.stringify({ type: "register", userId }));
+        const userId = JSON.parse(localStorage.getItem("user"))?.id;
+        const token = localStorage.getItem("JWT_TOKEN");
+        if (userId && token) {
+          socketRef.current.send(JSON.stringify({ type: "register", userId, token }));
         }
       };
 
@@ -79,6 +77,20 @@ export const WebSocketProvider = ({ children }) => {
         socketRef.current.close();
       }
     };
+  }, []);
+
+  // Listen for changes to user or token in localStorage and re-register if needed
+  useEffect(() => {
+    const handleStorageChange = () => {
+      const userId = JSON.parse(localStorage.getItem("user"))?.id;
+      const token = localStorage.getItem("JWT_TOKEN");
+      if (userId && token && socketRef.current && socketRef.current.readyState === WebSocket.OPEN) {
+        socketRef.current.send(JSON.stringify({ type: "register", userId, token }));
+      }
+    };
+
+    window.addEventListener("storage", handleStorageChange);
+    return () => window.removeEventListener("storage", handleStorageChange);
   }, []);
 
   const sendMessage = useCallback((message) => {

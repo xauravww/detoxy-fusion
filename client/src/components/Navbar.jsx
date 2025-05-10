@@ -17,8 +17,8 @@ const {socketRef} = useContext(webSocketContext)
   const username = JSON.parse(localStorage.getItem('user')) ? JSON.parse(localStorage.getItem('user'))?.user?.username : '';
  
   return (
-    <nav className="bg-gray-900 text-white p-4 shadow-md h-[11vh] lg:h-[10vh] z-[3] flex flex-col justify-center">
-      <div className="container mx-auto flex items-center justify-between">
+    <nav className="bg-gray-900 text-white p-4 shadow-md h-[13vh] lg:h-[12vh] z-[3] flex flex-col justify-center w-full overflow-x-hidden">
+      <div className="w-full flex items-center justify-between">
         <img src="/assets/detoxyfuse1.jpg" className="w-12 h-12 rounded-full ml-4" alt="Logo" />
         <div className="flex space-x-6">
           <Link

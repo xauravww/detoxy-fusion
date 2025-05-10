@@ -1,3 +1,28 @@
+# System files
+.DS_Store
+.idea/
+.vscode/
+
+# Build output
+build/
+dist/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Temp files
+*.tmp
+*.swp
+*.swo
+
+# Ignore coverage and test output
+coverage/
 
 /client/.env
 /server/.env

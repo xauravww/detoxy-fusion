@@ -20,8 +20,16 @@ const ForgotOrResetPassword = () => {
       setError('');
       setIsResetMode(true); // Switch to reset mode after email is sent
     } catch (err) {
+      let errorMsg = 'Failed to send password reset email. Please try again.';
+      if (err.response && err.response.data && err.response.data.error) {
+        if (err.response.data.error.includes('Password reset is not available for Google accounts')) {
+          errorMsg = 'This account uses Google login. Please sign in with Google instead.';
+        } else {
+          errorMsg = err.response.data.error;
+        }
+      }
       setMessage('');
-      setError('Failed to send password reset email. Please try again.');
+      setError(errorMsg);
     }
   };
 

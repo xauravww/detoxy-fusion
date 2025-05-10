@@ -2,6 +2,8 @@ import  { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import { sidebarContext } from "../context/Sidebar";
 import { webSocketContext } from "../context/Websocket";
+import HamsterLoader from './Loader/HamsterLoader';
+import FriendModal from './FriendModal';
 
 const Sidebar = () => {
   const { setSelectedChat, setIsOpen } = useContext(sidebarContext);
@@ -9,27 +11,36 @@ const Sidebar = () => {
   const [contacts, setContacts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [username , setUsername] = useState("")
+  const [isFriendModalOpen, setFriendModalOpen] = useState(false);
+  const userObj = JSON.parse(localStorage.getItem('user'));
+  const currentUserId = userObj?._id || userObj?.user?._id;
+  const token = localStorage.getItem('JWT_TOKEN');
+
   // Fetch contacts data from the backend
   useEffect(() => {
     if(localStorage.getItem('user')){
       setUsername(JSON.parse(localStorage.getItem('user'))?.user?.username || "guest_username")
     }
 
-    axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/users`)
-      .then((response) => {
-        const formattedContacts = response.data.map(user => ({
-          id: user._id,
-          name: user.username,
-          profilePicture: user.profilePicture,
-          isAI: false, // Adjust if you have AI contacts
-        }));
-        setContacts(formattedContacts);
-        setLoading(false);
+    if (currentUserId) {
+      axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/users/${currentUserId}/friends`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem('JWT_TOKEN')}` }
       })
-      .catch((error) => {
-        console.error("Error fetching contacts:", error);
-        setLoading(false); // Set loading to false even if there's an error
-      });
+        .then((response) => {
+          const formattedContacts = response.data.map(user => ({
+            id: user._id,
+            name: user.username,
+            profilePicture: user.profilePicture,
+            isAI: false, // Adjust if you have AI contacts
+          }));
+          setContacts(formattedContacts);
+          setLoading(false);
+        })
+        .catch((error) => {
+          console.error("Error fetching friends:", error);
+          setLoading(false); // Set loading to false even if there's an error
+        });
+    }
   }, []);
 
   // Function to check if a user is online
@@ -44,17 +55,17 @@ const Sidebar = () => {
 
   if (loading) {
     return (
-      <div className="flex flex-col w-[90vw] overflow-y-hidden md:w-auto p-4">
-        {/* Skeleton Loader */}
-        {Array.from({ length: 4 }).map((_, index) => (
-          <div key={index} className="flex items-center p-2 mb-2 bg-white bg-opacity-20 rounded-lg shadow-lg animate-pulse">
-            <div className="w-10 h-10 bg-gray-700 rounded-full mr-3"></div>
-            <div>
-              <div className="bg-gray-700 h-4 w-32 rounded-md mb-2"></div>
-              <div className="bg-gray-700 h-3 w-24 rounded-md"></div>
-            </div>
-          </div>
-        ))}
+      <div className="flex justify-center items-center h-screen">
+        <HamsterLoader />
+      </div>
+    );
+  }
+
+  if (contacts.length === 0 && !loading) {
+    return (
+      <div className="flex flex-col items-center justify-center h-full text-gray-400">
+        <p>No friends yet.</p>
+        <p>Add friends to start chatting!</p>
       </div>
     );
   }
@@ -115,6 +126,19 @@ const Sidebar = () => {
           </div>
         )}
       </div>
+      <button
+        onClick={() => currentUserId && setFriendModalOpen(true)}
+        style={{ width: '100%', margin: '12px 0', padding: 8, background: '#007bff', color: '#fff', border: 'none', borderRadius: 4 }}
+        disabled={!currentUserId}
+      >
+        Friends
+      </button>
+      <FriendModal
+        isOpen={isFriendModalOpen}
+        onClose={() => setFriendModalOpen(false)}
+        currentUserId={currentUserId}
+        token={token}
+      />
     </div>
   );
 };

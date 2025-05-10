@@ -4,6 +4,7 @@ import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google';
 import {jwtDecode} from 'jwt-decode'; // Corrected import for jwt-decode
 import logo from '../../public/assets/image.png'; // Update path if necessary
 import { googleSignUp, googleSignIn, emailSignUp, emailSignIn } from '../services/authService.js'; // Import the API services
+import { toast } from 'react-toastify';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -62,7 +63,7 @@ const Login = () => {
       navigate('/feed');
     } catch (error) {
       console.error("Error handling Google login:", error);
-      alert("An error occurred during Google login. Please try again.");
+      toast.error("An error occurred during Google login. Please try again.");
     }
   };
   
@@ -70,7 +71,7 @@ const Login = () => {
 
   const handleGoogleError = (err) => {
     console.error("Google login failed");
-    alert(err);
+    toast.error(err);
   };
 
   const handleFormChange = (e) => {
@@ -102,7 +103,7 @@ const Login = () => {
       navigate('/feed');
     } catch (error) {
       console.error(`Error during ${isSignUp ? 'sign-up' : 'sign-in'}:`, error);
-      alert(`Failed to ${isSignUp ? 'sign up' : 'sign in'}. Please try again.`);
+      toast.error(`Failed to ${isSignUp ? 'sign up' : 'sign in'}. Please try again.`);
     }
   };
   

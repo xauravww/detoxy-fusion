@@ -34,6 +34,18 @@ const userSchema = new Schema({
       ref: 'User',
     },
   ],
+  friendRequests: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: 'User',
+    },
+  ],
+  blockedUsers: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: 'User',
+    },
+  ],
   userPosts: [
     {
       type: Schema.Types.ObjectId,
@@ -53,7 +65,15 @@ const userSchema = new Schema({
     type: Date,
     default: Date.now,
   },
+  lastSeen: {
+    type: Date,
+    default: Date.now,
+  },
   isAI:{
+    type: Boolean,
+    default: false,
+  },
+  isGoogleAccount: {
     type: Boolean,
     default: false,
   },

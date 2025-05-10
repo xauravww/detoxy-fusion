@@ -7,6 +7,9 @@ import Navbar from './components/Navbar';
 import Profile from './components/Profile';
 import { sidebarContext } from './context/Sidebar';
 import ForgotOrResetPassword from './components/ForgotOrResetPassword';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import HamsterLoader from './components/Loader/HamsterLoader';
 
 const App = () => {
   const navigate = useNavigate();
@@ -42,11 +45,12 @@ const App = () => {
 
   // Handle the loading state while checking if the user is logged in
   if (isLoggedIn === null) {
-    return <div className="flex justify-center items-center h-screen text-white">Loading...</div>;
+    return <div className="flex justify-center items-center text-white"><HamsterLoader /></div>;
   }
 
   return (
-    <div className='bg-gradient-to-r from-gray-800 via-gray-900 to-black'>
+    <div className='bg-gradient-to-r from-gray-800 via-gray-900 to-black h-screen'>
+      <ToastContainer position="top-right" autoClose={3000} hideProgressBar={false} newestOnTop closeOnClick pauseOnFocusLoss draggable pauseOnHover />
       {isLoggedIn && <Navbar />}
       <Routes>
         <Route path='/login' element={<Login />} />

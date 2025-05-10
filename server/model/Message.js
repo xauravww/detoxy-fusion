@@ -25,6 +25,10 @@ const messageSchema = new Schema({
     type: String,
     default: null,
   },
+  fileUrl: {
+    type: String,
+    default: null,
+  },
   type:{
     type: String,
     required: true,
@@ -40,6 +44,16 @@ const messageSchema = new Schema({
     prompt: {
         type: String,
       },
+  },
+  readBy: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: 'User',
+    },
+  ],
+  groupId: {
+    type: String,
+    default: null,
   },
 }, {
   timestamps: true, 

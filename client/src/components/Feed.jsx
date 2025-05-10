@@ -2,6 +2,7 @@ import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import MasonryLayout from "./MasonryLayout";
 import { sidebarContext } from "../context/Sidebar";
+import HamsterLoader from './Loader/HamsterLoader';
 
 const Feed = () => {
   const [pins, setPins] = useState([]);
@@ -24,18 +25,11 @@ const Feed = () => {
   }, []);
 
   return (
-    <div className="bg-gradient-to-r from-gray-800 via-gray-900 to-black text-white p-4 min-h-screen h-[calc(100vh-11vh)] md:h-[calc(100vh-11vh)] lg:h-[calc(100vh-10vh)] overflow-y-scroll">
+    <div className="bg-gradient-to-r from-gray-800 via-gray-900 to-black text-white p-4 min-h-[calc(100vh-13vh)] h-[calc(100vh-13vh)] md:h-[calc(100vh-13vh)] lg:h-[calc(100vh-12vh)] overflow-y-scroll">
       {/* <h1 className="text-3xl font-bold mb-6">Feed</h1> */}
       {loading ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-          {/* Render skeletons while loading */}
-          {Array.from({ length: 6 }).map((_, index) => (
-            <div key={index} className="animate-pulse">
-              <div className="bg-gray-700 h-64 w-full rounded-md mb-4"></div>
-              <div className="bg-gray-700 h-4 w-3/4 rounded-md mb-2"></div>
-              <div className="bg-gray-700 h-4 w-1/2 rounded-md"></div>
-            </div>
-          ))}
+        <div className="flex justify-center items-center h-screen">
+          <HamsterLoader />
         </div>
       ) : (
         <MasonryLayout pins={pins} />

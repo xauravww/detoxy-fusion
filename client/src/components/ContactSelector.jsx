@@ -2,6 +2,8 @@ import { useContext, useEffect, useState } from "react";
 import { sidebarContext } from "../context/Sidebar";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { toast } from 'react-toastify';
+import HamsterLoader from './Loader/HamsterLoader';
 
 const ContactSelector = ({ onSelect, onClose, imageDetails }) => {
   const { selectedChat } = useContext(sidebarContext);
@@ -57,17 +59,17 @@ const ContactSelector = ({ onSelect, onClose, imageDetails }) => {
           },
         });
         if (response.status === 201) {
-          alert('Chat posted to feed!');
+          toast.success('Chat posted to feed!');
           navigate('/feed', { state: { scrollToBottom: true } });
         } else {
-          alert('Failed to post chat to feed.');
+          toast.error('Failed to post chat to feed.');
         }
       } catch (error) {
         console.error("Error posting to feed:", error);
-        alert('Failed to post chat to feed.');
+        toast.error('Failed to post chat to feed.');
       }
     } else {
-      alert('No image details available to post.');
+      toast.error('No image details available to post.');
     }
   };
 
@@ -78,10 +80,8 @@ const ContactSelector = ({ onSelect, onClose, imageDetails }) => {
 
   if (loading) {
     return (
-      <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-60">
-        <div className="bg-gray-800 p-4 rounded-lg w-80 max-w-md text-white">
-          <p>Loading contacts...</p>
-        </div>
+      <div className="flex justify-center items-center h-screen">
+        <HamsterLoader />
       </div>
     );
   }
