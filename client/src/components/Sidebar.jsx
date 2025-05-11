@@ -7,7 +7,7 @@ import FriendModal from './FriendModal';
 
 const Sidebar = () => {
   const { setSelectedChat, setIsOpen } = useContext(sidebarContext);
-  const { onlineUsers } = useContext(webSocketContext);
+  const { onlineUsers, socketRef } = useContext(webSocketContext);
   const [contacts, setContacts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [username , setUsername] = useState("")
@@ -15,6 +15,30 @@ const Sidebar = () => {
   const userObj = JSON.parse(localStorage.getItem('user'));
   const currentUserId = userObj?._id || userObj?.user?._id;
   const token = localStorage.getItem('JWT_TOKEN');
+
+  // Mark user as online on mount (login) and when tab is active/visible
+  useEffect(() => {
+    const sendRegister = () => {
+      if (socketRef && socketRef.current && currentUserId && token) {
+        socketRef.current.send(JSON.stringify({ type: 'register', userId: currentUserId, token }));
+      }
+    };
+    sendRegister(); // On mount and when userId/token change
+    const handleVisibility = () => {
+      if (document.visibilityState === 'visible') {
+        sendRegister();
+      }
+    };
+    const handleFocus = () => {
+      sendRegister();
+    };
+    window.addEventListener('focus', handleFocus);
+    document.addEventListener('visibilitychange', handleVisibility);
+    return () => {
+      window.removeEventListener('focus', handleFocus);
+      document.removeEventListener('visibilitychange', handleVisibility);
+    };
+  }, [socketRef, currentUserId, token]);
 
   // Fetch contacts data from the backend
   useEffect(() => {
@@ -51,6 +75,10 @@ const Sidebar = () => {
   const handleContactClick = (contact) => {
     setSelectedChat(contact);
     setIsOpen(true);
+    // Mark user as online when clicking chat
+    if (socketRef && socketRef.current && currentUserId && token) {
+      socketRef.current.send(JSON.stringify({ type: 'register', userId: currentUserId, token }));
+    }
   };
 
   if (loading) {

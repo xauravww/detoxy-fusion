@@ -1,13 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google';
 import {jwtDecode} from 'jwt-decode'; // Corrected import for jwt-decode
 import logo from '../../public/assets/image.png'; // Update path if necessary
 import { googleSignUp, googleSignIn, emailSignUp, emailSignIn } from '../services/authService.js'; // Import the API services
 import { toast } from 'react-toastify';
+import { webSocketContext } from '../context/Websocket';
 
 const Login = () => {
   const navigate = useNavigate();
+  const { socketRef } = useContext(webSocketContext);
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -59,7 +61,12 @@ const Login = () => {
         id: user.user._id, 
         user: user.user
       }));
-    
+      // Send register event if socket is available
+      if (socketRef && socketRef.current) {
+        const userId = user.user._id;
+        const token = user.token || user.token_JWT;
+        socketRef.current.send(JSON.stringify({ type: 'register', userId, token }));
+      }
       navigate('/feed');
     } catch (error) {
       console.error("Error handling Google login:", error);
@@ -99,7 +106,12 @@ const Login = () => {
         id:user.user._id, 
         user: user.user
       }));
-  
+      // Send register event if socket is available
+      if (socketRef && socketRef.current) {
+        const userId = user.user._id;
+        const token = user.token || user.token_JWT;
+        socketRef.current.send(JSON.stringify({ type: 'register', userId, token }));
+      }
       navigate('/feed');
     } catch (error) {
       console.error(`Error during ${isSignUp ? 'sign-up' : 'sign-in'}:`, error);
