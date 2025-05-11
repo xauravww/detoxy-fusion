@@ -45,11 +45,11 @@ const App = () => {
 
   // Handle the loading state while checking if the user is logged in
   if (isLoggedIn === null) {
-    return <div className="flex justify-center items-center text-white"><HamsterLoader /></div>;
+    return <div className="flex justify-center items-center text-white h-screen"><HamsterLoader /></div>;
   }
 
   return (
-    <div className='bg-gradient-to-r from-gray-800 via-gray-900 to-black h-screen'>
+    <div className='bg-gradient-to-r from-gray-800 via-gray-900 to-black min-h-screen'>
       <ToastContainer position="top-right" autoClose={3000} hideProgressBar={false} newestOnTop closeOnClick pauseOnFocusLoss draggable pauseOnHover />
       {isLoggedIn && <Navbar />}
       <Routes>

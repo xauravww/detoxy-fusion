@@ -327,7 +327,7 @@ function Chat() {
   }, [isLastScreenClosed]);
 
   return (
-    <div className="flex w-[100vw] h-[calc(100vh-13vh)] md:h-[calc(100vh-13vh)] lg:h-[calc(100vh-12vh)] bg-gradient-to-r from-gray-800 via-gray-900 to-black">
+    <div className="flex w-full h-[calc(100vh-13vh)] md:h-[calc(100vh-13vh)] lg:h-[calc(100vh-12vh)] bg-gradient-to-r from-gray-800 via-gray-900 to-black">
       <div
         className={`sidebar ${
           isOpen ? "hidden" : "w-[100vw]"
@@ -487,7 +487,7 @@ function Chat() {
           <div className="flex flex-col items-center justify-center">
             <HamsterLoader />
             <p className="text-white font-bold text-xl mt-2">
-              Be Patient, it might take 60 seconds
+              Be Patient, it might take few seconds
             </p>
           </div>
         </div>
