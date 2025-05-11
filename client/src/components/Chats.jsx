@@ -327,7 +327,7 @@ function Chat() {
   }, [isLastScreenClosed]);
 
   return (
-    <div className="flex w-full h-[calc(100vh-13vh)] md:h-[calc(100vh-13vh)] lg:h-[calc(100vh-12vh)] bg-gradient-to-r from-gray-800 via-gray-900 to-black">
+    <div className="fixed top-[13vh] lg:top-[12vh] left-0 w-full h-[calc(100vh-13vh)] lg:h-[calc(100vh-12vh)] bg-gradient-to-r from-gray-800 via-gray-900 to-black overflow-hidden z-40 flex">
       <div
         className={`sidebar ${
           isOpen ? "hidden" : "w-[100vw]"
@@ -369,7 +369,7 @@ function Chat() {
                   />
                 </button>
               </div>
-              <div className="flex-1 p-4 overflow-auto bg-gray-800 bg-opacity-50 rounded-b-lg shadow-lg">
+              <div className="flex-1 p-4 overflow-y-auto bg-gray-800 bg-opacity-50 rounded-b-lg shadow-lg">
                 {filteredMessages
                   .filter((message) => message.text || message.imageUrl)
                   .map((message) => {
@@ -483,7 +483,7 @@ function Chat() {
       )}
 
       {loading && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-60">
+        <div className="absolute left-0 top-0 w-full min-h-[calc(100vh-13vh)] md:min-h-[calc(100vh-13vh)] lg:min-h-[calc(100vh-12vh)] flex items-center justify-center bg-black bg-opacity-60 z-50">
           <div className="flex flex-col items-center justify-center">
             <HamsterLoader />
             <p className="text-white font-bold text-xl mt-2">
